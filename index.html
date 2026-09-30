@@ -506,7 +506,7 @@ const BINS=['557910','415231','491566','520488','455512','537830','406004'];
 const PANS=[];for(let i=0;i<420;i++)PANS.push(pick(BINS)+digits(10));
 const CIRC=[['Local',49],['Saliente',20],['Entrante',17],['Interredes',9],['Internacional',5]];
 const MOT=[['51','Fondos insuficientes',35],['05','No aprobar',17],['55','NIP incorrecto',13],['61','Excede límite de monto',10],['54','Tarjeta vencida',7],['VAL-00105','Reversos con original',6],['96','Error de red',5],['91','Emisor no disponible',4],['14','Tarjeta inválida',3]];
-const ORIG=[['Online',80],['Archivo',15],['Papel',5]];
+const ORIG=[['Online',80],['Archivo',20]];
 const ATMOPS={Retiros:[45,.961],Consultas:[20,.978],Surcharge:[25,1],TAE:[6,.884],Donativos:[4,.992]};
 const HOURS=[[0,1],[1,.6],[2,.4],[3,.3],[4,.3],[5,.5],[6,1],[7,2],[8,3.5],[9,4.5],[10,5],[11,5.3],[12,5.5],[13,5.6],[14,5.3],[15,5.2],[16,5.3],[17,5.4],[18,5.1],[19,4.6],[20,4],[21,3.2],[22,2.4],[23,1.6]];
 const STAGES=[['aut','Autorización','Aut'],['comp','Compensación','Comp'],['liq','Liquidación','Liq'],['inter','Intercambio','Int'],['envio','Envío de archivo','Envío']];
@@ -534,7 +534,7 @@ function mkTx(canal,base,dd){
 }
 function srcOf(t){
   if(t.canal==='ATM')return{aut:['TLF','TLF_'+ymd(t.fecha)+'.dat'],comp:['STATS','STATS_'+ymd(t.fecha)+'.dat'],liq:['SETLE01','SETLE01_'+ymd(t.fecha)+'.txt'],inter:['Archivo de intercambio','INTX_'+ymd(addD(t.fecha,2))+'_A.dat'],envio:['Envío a red','ENV_'+ymd(addD(t.fecha,2))+'.out']};
-  const a=t.origen==='Online'?['Online (switch)','—']:t.origen==='Archivo'?['Archivo TEF',t.dupOf?'TEF_'+ymd(t.fecha)+'_02.dat':'TEF_'+ymd(t.fecha)+'_01.dat']:['Fuente papel','PAP_'+ymd(t.fecha)+'_01.csv'];
+  const a=t.origen==='Online'?['Online (switch)','—']:t.origen==='Archivo'?['Archivo TEF',t.dupOf?'TEF_'+ymd(t.fecha)+'_02.dat':'TEF_'+ymd(t.fecha)+'_01.dat']:['Archivo TEF','TEF_'+ymd(t.fecha)+'_01.dat'];
   if(t.noAuth)a[0]='Sin registro online',a[1]='—';
   return{aut:a,comp:['Archivo de compensación','COMP_'+ymd(addD(t.fecha,1))+'_01.dat'],liq:['Archivo de liquidación','LIQ_'+ymd(addD(t.fecha,1))+'.txt'],inter:['Archivo de intercambio','INTX_'+ymd(addD(t.fecha,2))+'_A.dat'],envio:['Envío a red','ENV_'+ymd(addD(t.fecha,2))+'.out']};
 }
@@ -962,7 +962,7 @@ function vPOS(){
   const f=S.f;const set=posSet();const tx=set.filter(t=>!t.noAuth&&!t.dupOf);const ap=tx.filter(t=>t.aprobada);const rj=tx.filter(t=>!t.aprobada);
   const nc=ap.filter(t=>t.age>=1&&t.st.comp!=='v');const pp=ap.filter(t=>t.posteo==='g');const dp=ap.filter(t=>t.deposito==='g');
   const txW=W(tx),apW=W(ap),rjW=W(rj);
-  const origen=`<div class="fld">Origen<div class="seg">${['','Online','Archivo','Papel'].map(o=>`<button data-act="origen" data-v="${o}" aria-pressed="${f.origen===o}">${o==='Archivo'?'Archivo TEF':o||'Todos'}</button>`).join('')}</div></div>`;
+  const origen=`<div class="fld">Origen<div class="seg">${['','Online','Archivo'].map(o=>`<button data-act="origen" data-v="${o}" aria-pressed="${f.origen===o}">${o==='Archivo'?'Archivo TEF':o||'Todos'}</button>`).join('')}</div></div>`;
   const circSel=`<label class="fld">Circuito<select data-f="circ" class="${f.circ?'on':''}"><option value="">Todos</option>${CIRC.map(c=>`<option ${f.circ===c[0]?'selected':''}>${c[0]}</option>`).join('')}</select></label>`;
   const circBase=base('POS').filter(t=>(!f.origen||t.origen===f.origen)&&t.aprobada&&!t.noAuth&&!t.dupOf);const cbW=W(circBase);
   const circ=CIRC.map(c=>{const n=W(circBase.filter(t=>t.circ===c[0]));return{l:c[0],v:n,t:nC(n)+' · '+pct(n,cbW),on:f.circ===c[0]};});
@@ -973,7 +973,7 @@ function vPOS(){
   const stt=table(['Etapa',{l:'Completadas',r:1},{l:'Pendientes',r:1},{l:'Con incidencia',r:1},{l:'Importe pendiente',r:1}],st.map(r=>tr([`<b style="font-weight:500">${r[0]}</b>`,{h:nC(W(r[1])),r:1},{h:nC(W(r[2])),r:1},{h:r[3].length?`<span style="color:var(--bad)">${nC(W(r[3]))}</span>`:'0',r:1},{h:moneyM(WM(r[4])),r:1}])),{min:520});
   const mc={};rj.forEach(t=>{const k=t.motivo[0]+' · '+t.motivo[1];mc[k]=(mc[k]||0)+t.w;});
   const mot=Object.keys(mc).sort((a,b)=>mc[b]-mc[a]).map(k=>({l:k,v:mc[k],t:nC(mc[k])+' · '+pct(mc[k],rjW)}));
-  const og={};tx.forEach(t=>{const k=t.origen==='Archivo'?'Archivo TEF':t.origen==='Papel'?'Papel':'Online (Gran Captura)';og[k]=(og[k]||0)+t.w;});
+  const og={};tx.forEach(t=>{const k=t.origen==='Archivo'?'Archivo TEF':'Online (Gran Captura)';og[k]=(og[k]||0)+t.w;});
   const ogI=Object.keys(og).sort((a,b)=>og[b]-og[a]).map(k=>({l:k,v:og[k],t:nC(og[k])+' · '+pct(og[k],txW)}));
   return header('Dashboard POS','Monitoreo del circuito POS con las fuentes habilitadas en PET Fase 2 · '+esc(rangeTxt()))+filterBar(origen+circSel)+
    kpis([kpi('Operaciones POS',nC(txW),n0(txW)+' en el periodo'),kpi('Autorizadas',nC(apW),pct(apW,txW)+' de aprobación','up'),kpiD('posrj','Rechazadas',nC(rjW),pct(rjW,txW)+' del total','down'),kpiD('posnc','Valores no compensados',nC(W(nc)),moneyM(WM(nc)),nc.length?'down':''),kpiD('pospp','Posteo pendiente',nC(W(pp)),moneyM(WM(pp))),kpiD('posdp','Depósito pendiente',nC(W(dp)),moneyM(WM(dp))),kpi('Importe autorizado',moneyM(WM(ap)),'Ticket promedio '+(apW?money(WM(ap)/apW):'—'))])+
@@ -1109,7 +1109,7 @@ function vTraz(){
     const dynH=`<div class="dyn"><div class="fld">Estatus${segB('status',[['','Todos',S.res.length],['Match','Match',cnt('Match')],['No match','No match',cnt('No match')],['En proceso','En proceso',cnt('En proceso')],['Rechazada','Rechazada',cnt('Rechazada')]])}</div>
      <label class="fld">Etapa con incidencia<select data-dyn="etapa" class="${d.etapa?'on':''}">${opt('','Cualquiera',d.etapa)}${STAGES.map(x=>opt(x[0],x[1],d.etapa)).join('')}</select></label>
      <label class="fld">Tipo<select data-dyn="tipo" class="${d.tipo?'on':''}">${opt('','Todos',d.tipo)}${opt('Débito','Débito',d.tipo)}${opt('Crédito','Crédito',d.tipo)}</select></label>
-     <label class="fld">Origen<select data-dyn="origen" class="${d.origen?'on':''}">${opt('','Todos',d.origen)}${['Online','Archivo','Papel'].map(o=>opt(o,o==='Archivo'?'Archivo TEF':o,d.origen)).join('')}</select></label></div>`;
+     <label class="fld">Origen<select data-dyn="origen" class="${d.origen?'on':''}">${opt('','Todos',d.origen)}${['Online','Archivo'].map(o=>opt(o,o==='Archivo'?'Archivo TEF':o,d.origen)).join('')}</select></label></div>`;
     res=card('Resultados',dynH+opsTable(list,S.page,'page',S.res.length?`${n0(list.length)} de ${n0(S.res.length)} registros de muestra que coinciden con ${esc(S.used.join(' + '))} · representan ${nC(W(list))} operaciones.`:'','Ninguna operación coincide. Quita algún criterio o amplía el rango de fechas.'),'Los filtros dinámicos se aplican sin volver a buscar');}
   return header('Búsqueda de transacciones','Filtra por uno, varios o todos los criterios; abre la ficha de cualquier operación',S.res&&S.res.length?expBtn('expResCsv','Exportar CSV',true)+expBtn('expRes','Excel'):'')+card('Filtros de búsqueda',searchForm('q')+exH)+res;
 }
