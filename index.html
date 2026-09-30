@@ -967,10 +967,6 @@ function vPOS(){
   const circBase=base('POS').filter(t=>(!f.origen||t.origen===f.origen)&&t.aprobada&&!t.noAuth&&!t.dupOf);const cbW=W(circBase);
   const circ=CIRC.map(c=>{const n=W(circBase.filter(t=>t.circ===c[0]));return{l:c[0],v:n,t:nC(n)+' · '+pct(n,cbW),on:f.circ===c[0]};});
   const dc0=W(ap.filter(t=>t.dc===0));
-  const st=[['Compensación',ap.filter(t=>t.st.comp==='v'),ap.filter(t=>t.st.comp==='g'),ap.filter(t=>t.st.comp==='r'),ap.filter(t=>t.st.comp!=='v')],
-   ['Posteo',ap.filter(t=>t.posteo==='v'),pp,[],pp],['Depósito',ap.filter(t=>t.deposito==='v'),dp,[],dp],
-   ['Aclaración',ap.filter(t=>t.aclar==='Resuelta'),ap.filter(t=>t.aclar==='Abierta'),[],ap.filter(t=>t.aclar==='Abierta')]];
-  const stt=table(['Etapa',{l:'Completadas',r:1},{l:'Pendientes',r:1},{l:'Con incidencia',r:1},{l:'Importe pendiente',r:1}],st.map(r=>tr([`<b style="font-weight:500">${r[0]}</b>`,{h:nC(W(r[1])),r:1},{h:nC(W(r[2])),r:1},{h:r[3].length?`<span style="color:var(--bad)">${nC(W(r[3]))}</span>`:'0',r:1},{h:moneyM(WM(r[4])),r:1}])),{min:520});
   const mc={};rj.forEach(t=>{const k=t.motivo[0]+' · '+t.motivo[1];mc[k]=(mc[k]||0)+t.w;});
   const mot=Object.keys(mc).sort((a,b)=>mc[b]-mc[a]).map(k=>({l:k,v:mc[k],t:nC(mc[k])+' · '+pct(mc[k],rjW)}));
   const og={};tx.forEach(t=>{const k=t.origen==='Archivo'?'Archivo TEF':'Online (Gran Captura)';og[k]=(og[k]||0)+t.w;});
@@ -978,7 +974,7 @@ function vPOS(){
   return header('Dashboard POS','Monitoreo del circuito POS con las fuentes habilitadas en PET Fase 2 · '+esc(rangeTxt()))+filterBar(origen+circSel)+
    kpis([kpi('Operaciones POS',nC(txW),n0(txW)+' en el periodo'),kpi('Autorizadas',nC(apW),pct(apW,txW)+' de aprobación','up'),kpiD('posrj','Rechazadas',nC(rjW),pct(rjW,txW)+' del total','down'),kpiD('posnc','Valores no compensados',nC(W(nc)),moneyM(WM(nc)),nc.length?'down':''),kpiD('pospp','Posteo pendiente',nC(W(pp)),moneyM(WM(pp))),kpiD('posdp','Depósito pendiente',nC(W(dp)),moneyM(WM(dp))),kpi('Importe autorizado',moneyM(WM(ap)),'Ticket promedio '+(apW?money(WM(ap)/apW):'—'))])+
    `<div class="g3">${card('Autorizadas vs. rechazadas',stackDays(tx,'Autorizadas','Rechazadas'),'Por día')}${card('DC=0 vs. DC=1',donut(dc0,apW-dc0,'DC=0','DC=1 (Fase 1)'),'Autorizadas')}${card('Distribución por circuito',hbars(circ,'var(--acc)','circ'),'Toca para filtrar')}</div>`+
-   `<div class="g2">${card('Etapas del circuito',stt,'Compensación, posteo, depósito y aclaración')}${card('Motivos de rechazo',mot.length?hbars(mot,'var(--org)'):'<div class="empty">Sin rechazos en el periodo.</div>')}</div>`+
+   card('Motivos de rechazo',mot.length?hbars(mot,'var(--org)'):'<div class="empty">Sin rechazos en el periodo.</div>')+
    card('Operaciones por fuente de origen',hbars(ogI,'var(--c2)'),'Fuentes habilitadas en PET Fase 2');
 }
 function vATM(){
