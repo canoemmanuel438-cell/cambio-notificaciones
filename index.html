@@ -1250,7 +1250,7 @@ function vAlertas(){
   const sel=(k,l,opts)=>`<label class="fld">${l}<select data-al="${k}" class="${a[k]&&a[k]!=='activas'?'on':''}">${opts.map(o=>`<option value="${esc(o[0])}" ${a[k]===o[0]?'selected':''}>${esc(o[1])}</option>`).join('')}</select></label>`;
   const fb=`<div class="fbar">${sel('grupo','Tipo',[['','Todos']].concat(GRUPOS.map(g=>[g,g])))}${sel('etapa','Etapa',[['','Todas']].concat(etapas.map(e=>[e,e])))}${sel('sev','Severidad',[['','Todas'],['Alta','Alta'],['Media','Media'],['Baja','Baja']])}${sel('estado','Estado',[['activas','Abiertas y en atención'],['Abierta','Abiertas'],['En atención','En atención'],['Cerrada','Cerradas'],['todas','Todas']])}</div>`;
   const list=alertFiltered();const PS=15,pages=Math.max(1,Math.ceil(list.length/PS)),pg=Math.min(a.page,pages-1);
-  const rows=list.slice(pg*PS,pg*PS+PS).map(x=>tr([x.txId==='—'?'—':mono(x.txId),esc(x.tipo),esc(x.etapa),fDT(x.dt),x.fuente.indexOf('.')>0&&x.fuente.indexOf(' ')<0?mono(x.fuente):esc(x.fuente),chip(x.sev),chip(x.estado),`<button class="link" data-act="alsel" data-v="${x.id}">Ver detalle</button>`],`class="${a.sel===x.id?'sel':''}"`));
+  const rows=list.slice(pg*PS,pg*PS+PS).map(x=>tr([x.txId==='—'?'—':mono(x.txId),esc(x.tipo),esc(x.etapa),fDT(x.dt),x.fuente.indexOf('.')>0&&x.fuente.indexOf(' ')<0?mono(x.fuente):esc(x.fuente),chip(x.sev),chip(x.estado),`<button class="link" data-act="alsel" data-v="${x.id}">${a.sel===x.id?'Ocultar detalle':'Ver detalle'}</button>`],`class="${a.sel===x.id?'sel':''}"`));
   const tbl=table(['Transacción de referencia','Tipo de inconsistencia','Etapa','Fecha / hora','Fuente','Severidad','Estado',''],rows,{min:1160,empty:'No hay alertas con estos filtros.'})+(list.length>PS?`<div class="pager"><span>${n0(list.length)} alertas</span><div><button class="btn" data-act="alpage" data-v="${pg-1}" ${pg===0?'disabled':''}>Anterior</button><span style="align-self:center">${pg+1} de ${pages}</span><button class="btn" data-act="alpage" data-v="${pg+1}" ${pg>=pages-1?'disabled':''}>Siguiente</button></div></div>`:`<div class="pager"><span>${n0(list.length)} alertas</span></div>`);
   let det='';const x=ALERTS.find(y=>y.id===a.sel);
   if(x){
@@ -1260,7 +1260,7 @@ function vAlertas(){
       body+=`<div style="display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap"><span class="muted">Llave de correlación PET</span>${mono(t.pet)}</div><div style="display:flex;gap:14px;flex-wrap:wrap">${rec('Registro original',o,'')}${rec('Registro duplicado',t,'dup')}</div>`;}
     else if(t)body+=`<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">${sem(t)}<button class="link" data-act="ficha" data-v="${t.id}">Abrir ficha de la transacción</button></div>`;
     const btns=act?(x.estado==='Abierta'?`<button class="btn pri" data-act="alset" data-v="En atención">Tomar en seguimiento</button><button class="btn" data-act="alset" data-v="Cerrada">Cerrar alerta</button>`:x.estado==='En atención'?`<button class="btn pri" data-act="alset" data-v="Cerrada">Cerrar alerta</button><button class="btn" data-act="alset" data-v="Abierta">Regresar a abierta</button>`:`<button class="btn" data-act="alset" data-v="Abierta">Reabrir alerta</button>`):`<span class="muted" style="font-size:13px">Tu rol puede consultar esta alerta, pero no cambiar su estado.</span>`;
-    body+=`<div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">${btns}</div>`;
+    body+=`<div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">${btns}<button class="btn" data-act="alsel" data-v="${x.id}">Ocultar detalle</button></div>`;
     det=`<div id="aldet">${card('Detalle de la alerta',body,x.grupo)}</div>`;
   }
   return header('Alertamiento y monitoreo','Inconsistencias de negocio y eventos técnicos, con seguimiento de atención',expBtn('expAl','Exportar alertas'))+cards+card('Bandeja de alertas',fb+tbl,'Integrado con Cloud Monitoring')+det;
@@ -1644,7 +1644,7 @@ document.addEventListener('click',e=>{
       l.activo=!l.activo;l.version++;l.hist.push({dt:Date.now(),usr:'Usuario demo',rol:S.role,acc:l.activo?'Activación':'Desactivación',ver:l.version,mot:m,cam:[['Estado',l.activo?'Inactivo':'Activo',l.activo?'Activo':'Inactivo']]});
       saveLy();log(l.activo?'Activación de layout':'Desactivación de layout',l.id+' v'+l.version);S.ly.confirm=false;S.ly.err='';S.ly.motTmp='';toast('Layout '+l.id+(l.activo?' activado.':' desactivado.'));render(true);break;}
     case'grupo':S.al.grupo=S.al.grupo===v?'':v;S.al.page=0;render(true);break;
-    case'alsel':S.al.sel=v;render(true);{const d=document.getElementById('aldet');if(d)d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}break;
+    case'alsel':if(S.al.sel===v){S.al.sel=null;render(true);break;}S.al.sel=v;render(true);{const d=document.getElementById('aldet');if(d)d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}break;
     case'alpage':S.al.page=+v;render(true);break;
     case'alset':{const x=ALERTS.find(y=>y.id===S.al.sel);if(x&&ROLES[S.role].act){const prev=x.estado;x.estado=v;persistAlerts();log('Cambio de estado de alerta',x.id+': '+prev+' → '+v);toast('Alerta '+x.id+': '+v.toLowerCase()+'.');render(true);}break;}
     case'nmtab':S.nm.tab=v;S.nm.page=0;render(true);break;
