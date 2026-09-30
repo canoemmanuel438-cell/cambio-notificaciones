@@ -1170,7 +1170,6 @@ function vReportes(){
   const prev=R.rows.slice(1,9);
   const layout=`<div class="tw"><table class="t" style="min-width:2400px"><thead><tr>${REPH.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${prev.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===0||i===5?'mono':''}" style="white-space:nowrap">${esc(c===''?'—':c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><span class="muted" style="font-size:12px">Ejemplo con ${prev.length} registros. Delimitador coma, comillas cuando se necesitan y encabezados de columna requeridos.</span>`;
   const hist=table(['Envío','Operaciones del',{l:'Registros',r:1},{l:'Excepciones',r:1},{l:'Tamaño',r:1},'Estado',''],days.map((d,i)=>{const r=repData(d);const w=sameDay(d,SETL_MISSING);return tr([fDT(new Date(addD(d,1).getTime()+2*60e3)),fDate(d),{h:nC(r.full),r:1},{h:nC(r.exc),r:1},{h:kb(r.fullSize),r:1},`<span class="chip ${w?'c-warn':'c-ok'}">${w?'Con advertencia':'Enviado'}</span>`,`<button class="link" data-act="repday" data-v="${i}">Ver</button>`],i===S.rep?'class="sel"':'');}),{min:640});
-  const pend=table(['Definición','Origen','Estado'],[['Layout del reporte POS','Propuesta RF 1.3','Pendiente'],['Medio de entrega: correo o unidad compartida','Propuesta RF 1.3','Pendiente'],['Gráfica de evolución de 120 días','Minuta 21 sep · MAQ-01','Pendiente'],['Reglas del semáforo de match','Minuta 21 sep · MAQ-05','Pendiente'],['Alcance de reglas de negocio firmado por operaciones','Minuta 21 sep · MAQ-02','Comprometido']].map(r=>tr([esc(r[0]),`<span class="muted">${esc(r[1])}</span>`,`<span class="chip ${r[2]==='Pendiente'?'c-warn':'c-acc'}">${r[2]}</span>`])),{min:480});
   return header('Reportes','Reporte de integridad diario: cruce de inventarios de lo autorizado contra lo compensado, procesado en batch T+1',expBtn('expRep','Descargar muestra CSV',true))+
    `<div class="fbar">${daySel}<span class="fresh"><span class="dot"></span>Envío automático a medianoche · volumen de referencia 50 M/mes</span></div>`+
    card('Entrega del reporte',status,'Operaciones del '+fDate(D))+
@@ -1178,8 +1177,7 @@ function vReportes(){
    `<div class="g2">${card('Motivos de no match',nmW?hbars(motI,'var(--c3)'):'<div class="empty">Sin operaciones sin match este día.</div>','Qué se autorizó y no se compensó, y qué llegó a compensación sin autorización')}${card('Motivos de rechazo',rjW?hbars(rjI,'var(--c4)'):'<div class="empty">Sin rechazos este día.</div>','Detalle y tipo de rechazo del layout')}</div>`+
    card('Inventarios cruzados',invT+'<span class="muted" style="font-size:12px">El cruce parte de lo migrado en Fase 1 (DC=1) y suma Gran Captura, TEF, 510 y 350.</span>')+
    card('Historial de envíos',hist,'Últimos 14 días')+
-   `<div class="g2">${card('Vista del correo',mail,'Versión visual que recibe operaciones')}${card('Estructura del reporte (layout CSV)',layout,REPH.length+' campos')}</div>`+
-   card('Definiciones pendientes',pend,'De la propuesta y la minuta del 21 sep 2026');
+   `<div class="g2">${card('Vista del correo',mail,'Versión visual que recibe operaciones')}${card('Estructura del reporte (layout CSV)',layout,REPH.length+' campos')}</div>`;
 }
 
 /* ---------- ficha técnica ---------- */
