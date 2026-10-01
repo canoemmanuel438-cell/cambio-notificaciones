@@ -8,6 +8,7 @@ Es un sitio estático: un solo `index.html`, sin compilación ni dependencias qu
 - `index.html`: la aplicación completa (HTML, CSS y JavaScript).
 - `favicon.svg`: ícono del sitio.
 - `vercel.json`: configuración de Vercel (URLs limpias, cabeceras de seguridad y `noindex` para que no aparezca en buscadores).
+- `middleware.js`: pide usuario y contraseña (Basic Auth) antes de mostrar cualquier página.
 
 ## Desplegar en Vercel
 
@@ -25,9 +26,20 @@ vercel          # vista previa
 vercel --prod   # producción
 ```
 
+## Acceso protegido
+
+`middleware.js` corre en Vercel antes de servir cualquier archivo y pide usuario y contraseña con el cuadro nativo del navegador (equivalente a un `.htpasswd`).
+
+1. En Vercel: *Project → Settings → Environment Variables*, agrega `BASIC_AUTH_USER` y `BASIC_AUTH_PASSWORD` para *Production* y *Preview*.
+   Por CLI: `vercel env add BASIC_AUTH_USER production` y `vercel env add BASIC_AUTH_PASSWORD production`.
+2. Vuelve a desplegar (*Redeploy* o `vercel --prod`); las variables solo aplican en despliegues nuevos.
+
+Si las variables no existen, el sitio responde 401 a todo (queda cerrado, no abierto).
+Para comprobarlo: `curl -I https://<dominio>` debe dar `401`, y `curl -I -u usuario:clave https://<dominio>` debe dar `200`.
+
 ## Probar en tu computadora
 
-Abre `index.html` directamente en el navegador, o levanta un servidor local:
+Abre `index.html` directamente en el navegador, o levanta un servidor local (ninguno de los dos aplica la contraseña; para probarla en local usa `vercel dev`):
 ```bash
 npx serve .
 ```
@@ -38,4 +50,4 @@ npx serve .
 - Carga dos librerías desde cdnjs (jsPDF y SheetJS) para las descargas en PDF y Excel, y la tipografía desde Google Fonts, así que necesita conexión a internet.
 - Los cambios en el Web Manager de layouts y el último rol elegido se guardan en el `localStorage` de cada navegador.
 - El acceso por rol es simulado; en producción se integra con PingOne (SAML).
-- Si el enlace va a compartirse fuera del equipo, activa *Deployment Protection* en Vercel (Settings → Deployment Protection) para pedir inicio de sesión.
+- El acceso al sitio se protege con usuario y contraseña compartidos (ver *Acceso protegido*). Es una barrera para que no quede público, no un control de seguridad fuerte.
