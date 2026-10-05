@@ -1,0 +1,209 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+/* Modo oscuro automático según el sistema. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+/*
+ * Sistema de diseño — Monitor transaccional POS y ATM.
+ * Visor PET: fondo gris azulado, tarjetas blancas, azul marino corporativo, acentos turquesa/naranja.
+ * Nunca usar colores literales en componentes; siempre estos tokens.
+ */
+
+@theme inline {
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 2px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  --color-serie-2: var(--serie-2);
+  --color-serie-3: var(--serie-3);
+  --color-serie-4: var(--serie-4);
+  --color-navy: var(--navy);
+  --color-naranja: var(--naranja);
+  --color-verde-solido: var(--verde-solido);
+  --color-rojo-solido: var(--rojo-solido);
+  --color-sidebar-activo: var(--sidebar-activo);
+  --color-sidebar-tenue: var(--sidebar-tenue);
+  --color-verde: var(--verde);
+  --color-verde-suave: var(--verde-suave);
+  --color-rojo: var(--rojo);
+  --color-rojo-suave: var(--rojo-suave);
+  --color-ambar: var(--ambar);
+  --color-ambar-suave: var(--ambar-suave);
+  --color-pendiente: var(--pendiente);
+  --color-pendiente-suave: var(--pendiente-suave);
+
+  --color-chart-1: var(--primary);
+  --color-chart-2: var(--serie-2);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--primary);
+  --color-sidebar-primary-foreground: var(--primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--ring);
+}
+
+:root {
+  --radius: 10px;
+
+  --background: #edf2f7;
+  --foreground: #132433;
+  --card: #ffffff;
+  --card-foreground: #132433;
+  --popover: #ffffff;
+  --popover-foreground: #132433;
+
+  --primary: #1f5f8b;
+  --primary-foreground: #ffffff;
+  --secondary: #e6ecf2;
+  --secondary-foreground: #132433;
+  --muted: #e1e8ef;
+  --muted-foreground: #536477;
+  --accent: #e0ecf6;
+  --accent-foreground: #123f63;
+  --destructive: #d2362d;
+  --destructive-foreground: #ffffff;
+
+  --border: #d4dee8;
+  --input: #d4dee8;
+  --ring: #1d5c8a;
+
+  --serie-2: #22a0b8;
+  --serie-3: #f0922e;
+  --serie-4: #98a3ae;
+  --navy: #0f3a5f;
+  --navy-2: #1f5f8b;
+  --naranja: #ee8a23;
+  --verde: #17693a;
+  --verde-suave: #dcf3e3;
+  --verde-solido: #22a04b;
+  --rojo: #a11d1d;
+  --rojo-suave: #fce3e1;
+  --rojo-solido: #d2362d;
+  --ambar: #8a4b06;
+  --ambar-suave: #fdebd5;
+  --pendiente: #98a3ae;
+  --pendiente-suave: #e6ecf1;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2a3d50;
+  --sidebar-accent: #eef3f8;
+  --sidebar-accent-foreground: #132433;
+  --sidebar-activo: #1f5f8b;
+  --sidebar-tenue: #7f8fa0;
+  --sidebar-border: #d4dee8;
+  --banner-foreground: #ffffff;
+  --gradiente-banner: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0e1620;
+    --foreground: #e7edf3;
+    --card: #16212d;
+    --card-foreground: #e7edf3;
+    --popover: #16212d;
+    --popover-foreground: #e7edf3;
+    --primary: #5ea6d6;
+    --primary-foreground: #0e1620;
+    --secondary: #1e2d3c;
+    --secondary-foreground: #e7edf3;
+    --muted: #223243;
+    --muted-foreground: #9fb0c1;
+    --accent: #16324a;
+    --accent-foreground: #bfddf2;
+    --destructive: #e0574a;
+    --destructive-foreground: #16212d;
+    --border: #26384a;
+    --input: #26384a;
+    --ring: #5ea6d6;
+    --serie-2: #3bb7ce;
+    --serie-3: #f4a24a;
+    --serie-4: #7c8894;
+    --navy: #0b2a45;
+    --navy-2: #174a70;
+    --naranja: #f2a04b;
+    --verde: #8fdca8;
+    --verde-suave: #12301e;
+    --verde-solido: #35b462;
+    --rojo: #f6ada6;
+    --rojo-suave: #3a1714;
+    --rojo-solido: #e0574a;
+    --ambar: #f4c98f;
+    --ambar-suave: #3a2710;
+    --pendiente: #7c8894;
+    --pendiente-suave: #233344;
+    --sidebar: #121c27;
+    --sidebar-foreground: #c4d1de;
+    --sidebar-accent: #1b2836;
+    --sidebar-accent-foreground: #e7edf3;
+    --sidebar-activo: #1f5f8b;
+    --sidebar-tenue: #7f92a5;
+    --sidebar-border: #26384a;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility panel {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+@utility numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility banner {
+  background-image: var(--gradiente-banner);
+  color: var(--banner-foreground);
+  border-radius: 12px;
+}
